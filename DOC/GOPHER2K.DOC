@@ -1,0 +1,34 @@
+Where \t refers explicitly to the tab, except where double backslashed
+where \\t is a string literal "\t"
+
+The basic format of a Gopher+/Gopher2k query is thus:
+
+  selector[\tsearch]\t+[REP][\tdataflag]\r\n[datablock]
+
+selv = [split selector "\t"]
+seln = [llength $selv]
+
+Error numbers: 300 - TLS unavailable
+               301 - go ahead
+
+New filetypes: Q - 2k protocol message
+
+In Gopher2k, if selv[0] is ".CAPS", case-insensitive, selv[seln-2] is
+0, selv[seln-3] is +STARTTLS, and [llength [lrange $selv 1 end-4]] is
+anything (it's ignored), the server will, if it does not support
+STARTTLS but does support Gopher2k, give the following error & close
+the connection as a regular Gopher connection. The message may vary
+depending on the specific server, but it must be an error with the
+number 300 in ASCII numerals as the first three characters.
+
+  3300 STARTTLS unavailable (misconfigured or not supported)\t
+ /\t<server hostname>\t<port>[\tgopherplusextensions]\r\n
+
+If it supports STARTTLS and is properly configured (PEMfile and all),
+the client receives the following line and the connection will not
+be closed by the server:
+
+  Q301 Go ahead\t/\t<host>\t<port>[\t<gopherplusextensions>]\r\n
+
+At that point, there should be a TLS handshake and the connection
+proceeds as a regular Gopher or Gopher2k connection.
